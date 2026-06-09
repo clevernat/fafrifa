@@ -1,0 +1,109 @@
+# Data catalog for the Track A extremes workflow.
+#
+# Maps (model, scenario, variable) -> storage backend + URI(s). Edit the URIs to
+# point at the Reflective Cloud Hub paths; switch a model's `backend` from
+# `s3-netcdf` to `zarr` to use the cloud-optimized stores when S3 reads become
+# the bottleneck (per the June 4 2026 check-in). The `available` flags let the
+# pipeline skip model x scenario combinations that have not been published yet.
+#
+# NOTE: the URIs below are placeholders with the expected layout. Replace the
+# bucket / prefix with the real Cloud Hub locations; nothing else needs to change.
+
+default_backend: s3-netcdf
+
+backend_kwargs:
+  s3-netcdf:
+    anon: true                 # set false + configure creds for private buckets
+  zarr:
+    storage_options:
+      anon: true
+
+# Reference baseline used for percentile indices' base period.
+# Per Duffey & Irvine (2024), the baseline should be matched in global-mean
+# temperature to the SAI run (a quasi-equilibrium reference), NOT a transient
+# warming state, to avoid biasing the attributed extremes response.
+baseline:
+  name: SSP2-4.5-ref
+  description: >
+    Quasi-equilibrium reference at the SAI target global-mean temperature
+    (~1.5 K above pre-industrial), used as the base period for percentile
+    thresholds. See DATA_CARD.md.
+  period: [2050, 2069]
+
+scenarios:
+  - G6-1.5K-SAI
+  - G6-1.5K-HiLLA
+
+models:
+
+  CESM:                          # CESM2-WACCM6
+    long_name: CESM2-WACCM6
+    backend: s3-netcdf
+    calendar: noleap
+    scenarios:
+      G6-1.5K-SAI:
+        available: true
+        uris:
+          tasmax: "s3://reflective-cloudhub/geomip/CESM2-WACCM/G6-1.5K-SAI/day/tasmax/*.nc"
+          tasmin: "s3://reflective-cloudhub/geomip/CESM2-WACCM/G6-1.5K-SAI/day/tasmin/*.nc"
+          pr:     "s3://reflective-cloudhub/geomip/CESM2-WACCM/G6-1.5K-SAI/day/pr/*.nc"
+      G6-1.5K-HiLLA:
+        available: true
+        uris:
+          tasmax: "s3://reflective-cloudhub/geomip/CESM2-WACCM/G6-1.5K-HiLLA/day/tasmax/*.nc"
+          tasmin: "s3://reflective-cloudhub/geomip/CESM2-WACCM/G6-1.5K-HiLLA/day/tasmin/*.nc"
+          pr:     "s3://reflective-cloudhub/geomip/CESM2-WACCM/G6-1.5K-HiLLA/day/pr/*.nc"
+
+  MIROC:                         # MIROC-ES2H
+    long_name: MIROC-ES2H
+    backend: s3-netcdf
+    calendar: gregorian
+    scenarios:
+      G6-1.5K-SAI:
+        available: true
+        uris:
+          tasmax: "s3://reflective-cloudhub/geomip/MIROC-ES2H/G6-1.5K-SAI/day/tasmax/*.nc"
+          tasmin: "s3://reflective-cloudhub/geomip/MIROC-ES2H/G6-1.5K-SAI/day/tasmin/*.nc"
+          pr:     "s3://reflective-cloudhub/geomip/MIROC-ES2H/G6-1.5K-SAI/day/pr/*.nc"
+      G6-1.5K-HiLLA:
+        available: false
+        note: >
+          MIROC is not part of the multi-model HiLLA ensemble in Duffey et al.
+          (2026) (UKESM1, CESM2-WACCM, E3SMv3). Flip to true when published.
+        uris: {}
+
+  UKESM:                         # UKESM1.0-LL
+    long_name: UKESM1-0-LL
+    backend: s3-netcdf
+    calendar: 360_day
+    scenarios:
+      G6-1.5K-SAI:
+        available: true
+        uris:
+          tasmax: "s3://reflective-cloudhub/geomip/UKESM1-0-LL/G6-1.5K-SAI/day/tasmax/*.nc"
+          tasmin: "s3://reflective-cloudhub/geomip/UKESM1-0-LL/G6-1.5K-SAI/day/tasmin/*.nc"
+          pr:     "s3://reflective-cloudhub/geomip/UKESM1-0-LL/G6-1.5K-SAI/day/pr/*.nc"
+      G6-1.5K-HiLLA:
+        available: true
+        uris:
+          tasmax: "s3://reflective-cloudhub/geomip/UKESM1-0-LL/G6-1.5K-HiLLA/day/tasmax/*.nc"
+          tasmin: "s3://reflective-cloudhub/geomip/UKESM1-0-LL/G6-1.5K-HiLLA/day/tasmin/*.nc"
+          pr:     "s3://reflective-cloudhub/geomip/UKESM1-0-LL/G6-1.5K-HiLLA/day/pr/*.nc"
+
+  E3SMv3:                        # E3SM v3
+    long_name: E3SM-3-0
+    backend: zarr                # example: this model already cloud-optimized
+    calendar: noleap
+    scenarios:
+      G6-1.5K-SAI:
+        available: true
+        uris:
+          tasmax: "s3://reflective-cloudhub/geomip-zarr/E3SM-3-0/G6-1.5K-SAI/day/tasmax.zarr"
+          tasmin: "s3://reflective-cloudhub/geomip-zarr/E3SM-3-0/G6-1.5K-SAI/day/tasmin.zarr"
+          pr:     "s3://reflective-cloudhub/geomip-zarr/E3SM-3-0/G6-1.5K-SAI/day/pr.zarr"
+      G6-1.5K-HiLLA:
+        available: true
+        uris:
+          tasmax: "s3://reflective-cloudhub/geomip-zarr/E3SM-3-0/G6-1.5K-HiLLA/day/tasmax.zarr"
+          tasmin: "s3://reflective-cloudhub/geomip-zarr/E3SM-3-0/G6-1.5K-HiLLA/day/tasmin.zarr"
+          pr:     "s3://reflective-cloudhub/geomip-zarr/E3SM-3-0/G6-1.5K-HiLLA/day/pr.zarr"

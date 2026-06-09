@@ -1,0 +1,49 @@
+# Machine-readable schema for the extremes-indices dataset (Deliverable 2).
+# Conventions: CF-1.10. One NetCDF file per (model, scenario).
+dataset:
+  conventions: CF-1.10
+  filename_template: "etccdi_{model}_{scenario}.nc"
+  dimensions: [year, lat, lon]
+  coordinates:
+    year: {dtype: int32, units: "1", description: "calendar year of the annual index"}
+    lat:  {dtype: float64, units: degrees_north, standard_name: latitude}
+    lon:  {dtype: float64, units: degrees_east, standard_name: longitude, range: "[-180, 180)"}
+  global_attributes:
+    required: [title, model, scenario, Conventions, institution, source, references,
+               baseline, history, sai_extremes_version]
+  variable_attributes:
+    required: [long_name, units, description, cell_methods, index_id]
+    optional: [base_percentile, bootstrap, standard_name]
+
+variables:
+  # id: [long_name, var_in, units, kind]
+  SU:      {long_name: "Summer days (TX > 25 degC)", input: tasmax, units: days, kind: count}
+  ID:      {long_name: "Icing days (TX < 0 degC)", input: tasmax, units: days, kind: count}
+  FD:      {long_name: "Frost days (TN < 0 degC)", input: tasmin, units: days, kind: count}
+  TR:      {long_name: "Tropical nights (TN > 20 degC)", input: tasmin, units: days, kind: count}
+  R10mm:   {long_name: "Heavy precipitation days (>= 10 mm)", input: pr, units: days, kind: count}
+  R20mm:   {long_name: "Very heavy precipitation days (>= 20 mm)", input: pr, units: days, kind: count}
+  CDD:     {long_name: "Consecutive dry days", input: pr, units: days, kind: spell}
+  CWD:     {long_name: "Consecutive wet days", input: pr, units: days, kind: spell}
+  TXx:     {long_name: "Annual max of daily max temperature", input: tasmax, units: degC, kind: block}
+  TXn:     {long_name: "Annual min of daily max temperature", input: tasmax, units: degC, kind: block}
+  TNx:     {long_name: "Annual max of daily min temperature", input: tasmin, units: degC, kind: block}
+  TNn:     {long_name: "Annual min of daily min temperature", input: tasmin, units: degC, kind: block}
+  Rx1day:  {long_name: "Annual max 1-day precipitation", input: pr, units: mm, kind: block}
+  Rx5day:  {long_name: "Annual max 5-day precipitation", input: pr, units: mm, kind: block}
+  PRCPTOT: {long_name: "Annual total wet-day precipitation", input: pr, units: mm, kind: accumulation}
+  SDII:    {long_name: "Simple daily intensity index", input: pr, units: mm/day, kind: accumulation}
+  TX90p:   {long_name: "Warm days (TX > 90th pct)", input: tasmax, units: "%", kind: percentile, base_percentile: 90}
+  TX10p:   {long_name: "Cool days (TX < 10th pct)", input: tasmax, units: "%", kind: percentile, base_percentile: 10}
+  TN90p:   {long_name: "Warm nights (TN > 90th pct)", input: tasmin, units: "%", kind: percentile, base_percentile: 90}
+  TN10p:   {long_name: "Cold nights (TN < 10th pct)", input: tasmin, units: "%", kind: percentile, base_percentile: 10}
+  WSDI:    {long_name: "Warm spell duration index", input: tasmax, units: days, kind: percentile, base_percentile: 90}
+  CSDI:    {long_name: "Cold spell duration index", input: tasmin, units: days, kind: percentile, base_percentile: 10}
+  R95p:    {long_name: "Precip from days > 95th wet-day pct", input: pr, units: mm, kind: percentile, base_percentile: 95}
+  R99p:    {long_name: "Precip from days > 99th wet-day pct", input: pr, units: mm, kind: percentile, base_percentile: 99}
+
+parameters:
+  wet_day_mm: 1.0
+  percentile_window_days: 5
+  spell_min_days: 6
+  bootstrap: "Zhang et al. (2005) out-of-base, temperature percentile indices"

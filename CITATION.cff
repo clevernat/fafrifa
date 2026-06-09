@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+message: "If you use this workflow or dataset, please cite it as below."
+title: "sai-extremes: an open, reproducible workflow for SAI mid-latitude extremes indices"
+abstract: >-
+  An open-science workflow, multi-model indices dataset, and revised uncertainty
+  assessment for the mid-latitude extreme winter weather response to stratospheric
+  aerosol injection, using the GeoMIP G6-1.5K-SAI and G6-1.5K-HiLLA simulations.
+  Prototype for the Reflective SAI Uncertainty Database (Track A).
+type: software
+version: "0.1.0"
+date-released: "2026-06-08"
+license: MIT
+keywords:
+  - stratospheric aerosol injection
+  - solar geoengineering
+  - climate extremes
+  - ETCCDI
+  - GeoMIP
+  - extratropical circulation
+  - open science
+authors:
+  - family-names: "Track A Internship"
+    given-names: "Reflective"
+references:
+  - type: article
+    authors:
+      - family-names: Zhang
+        given-names: X.
+    title: "Indices for monitoring changes in extremes based on daily temperature and precipitation data"
+    year: 2011
+    journal: "WIREs Climate Change"
+  - type: article
+    authors:
+      - family-names: Zhang
+        given-names: X.
+    title: "Avoiding inhomogeneity in percentile-based indices of temperature extremes"
+    year: 2005
+    journal: "Journal of Climate"
+  - type: article
+    authors:
+      - family-names: Tibaldi
+        given-names: S.
+      - family-names: Molteni
+        given-names: F.
+    title: "On the operational predictability of blocking"
+    year: 1990
+    journal: "Tellus A"

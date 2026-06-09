@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: deliverable-1-workflow/sai-extremes
+
+jobs:
+  # Fast path: the pure-NumPy kernels + diagnostics must pass with only the
+  # light core dependencies installed (no xarray / cftime / netCDF4). This proves
+  # the index/diagnostic math is verifiable in a minimal environment.
+  kernels-light:
+    name: Kernel tests (NumPy-only)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install core only
+        run: pip install -e .
+      - name: Run NumPy-only test scripts
+        run: |
+          python tests/test_kernels.py
+          python tests/test_percentiles.py
+          python tests/test_diagnostics.py
+
+  # Full path: install the climate stack and run the whole pytest suite,
+  # including the xarray integration tests that assert the production operators
+  # reproduce the kernels exactly.
+  full-suite:
+    name: Full suite (xarray)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install with test + xarray extras
+        run: pip install -e ".[test,xarray]"
+      - name: Run pytest
+        run: pytest -q
+
+  # Smoke-test the dataset generator (Deliverable 2) end-to-end on a tiny grid.
+  demo-dataset:
+    name: Demo dataset smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install core + viz
+        working-directory: deliverable-1-workflow/sai-extremes
+        run: pip install -e ".[viz]"
+      - name: Generate demo dataset
+        working-directory: .
+        run: python deliverable-2-dataset/scripts/generate_demo_dataset.py
