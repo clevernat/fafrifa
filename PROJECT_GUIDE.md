@@ -347,7 +347,116 @@ Duffey & Irvine 2024).
 
 ---
 
-## 6. How to actually run it
+## 5.5. The 10-week plan at a glance
+
+The internship runs as a 10-week project (1 June – 14 August 2026). Here's the
+schedule as a timeline, colour-coded by phase. The first weeks ("what happens to
+extremes") build Deliverables 1 & 2; the later weeks ("why it happens") add the
+circulation diagnostics and the written assessment (Deliverable 3).
+
+```mermaid
+gantt
+    title Track A — 10-Week Project Plan (2026)
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+
+    section Setup
+    Onboarding, scope, baseline read        :done,   w1, 2026-06-01, 7d
+
+    section Build the tool (D1)
+    Reproduce existing code, I/O layer       :active, w2, 2026-06-08, 14d
+
+    section What happens (D1 + D2)
+    Add percentile indices, run full set     :        w3, 2026-06-22, 21d
+    Mid-project presentation                 :milestone, m1, 2026-07-10, 0d
+
+    section Why it happens (diagnostics)
+    Jet, storm-track, blocking, model spread :        w4, 2026-07-13, 14d
+
+    section Synthesis (D3)
+    Draft uncertainty entry, finalise        :        w5, 2026-07-27, 19d
+    Team retreat, San Francisco              :milestone, m2, 2026-08-05, 0d
+```
+
+| Weeks | Dates | Focus | Produces |
+|-------|-------|-------|----------|
+| 1 | Jun 1–7 | Onboarding, agree scope, confirm 4 models | — |
+| 2–3 | Jun 8–21 | Reproduce code, build tested I/O layer | Deliverable 1 (core) |
+| 4–6 | Jun 22–Jul 12 | Add percentile indices, run everything | Deliverables 1 & 2 |
+| 7–8 | Jul 13–26 | Jet / storm-track / blocking, model spread | Circulation diagnostics |
+| 9–10 | Jul 27–Aug 14 | Write-up, finalise figures, release | Deliverable 3 |
+
+> **Where this repo stands:** the work delivered here corresponds to Weeks 2–6
+> (the tool + dataset) plus a working build of the Weeks 7–8 diagnostics and a
+> first draft of the Week 9–10 write-up — i.e. it front-loads the full pipeline so
+> the later weeks become analysis rather than engineering.
+
+---
+
+## 6. Frequently asked questions
+
+**Q: Is this real climate data?**
+No — the demo numbers were made with a synthetic ("fake but realistic") data
+generator, because the real GeoMIP data on Reflective's Cloud Hub wasn't
+reachable while building this. The *code*, *file formats*, and *maths* are all
+real and tested; only the input numbers are stand-ins. Point the tool at the real
+Cloud Hub and it produces real results with no code changes. This is stated
+openly in the data card.
+
+**Q: So is the project still valid for the application?**
+Yes. The internship is explicitly about *demonstrating open-science workflows and
+communicating uncertainty*, not about having the final scientific answer. A
+correct, tested, reproducible pipeline plus a well-reasoned uncertainty write-up
+is exactly the deliverable. The synthetic demo proves the whole thing runs
+end-to-end.
+
+**Q: Why are there "kernels" and a separate "xarray layer"? Isn't that
+duplication?**
+They're not duplicates — they're two roles. The *kernel* is the actual formula
+(simple, testable). The *xarray layer* just applies that one formula efficiently
+across a huge grid. There's a test that checks they always agree, so the formula
+exists in exactly one place. This makes the maths easy to verify and the code
+easy to trust.
+
+**Q: What's the difference between G6-1.5K-SAI and G6-1.5K-HiLLA again?**
+Both are SAI (cooling particles), aiming for the same ~1.5 °C target. They differ
+in *where* the particles go: **SAI** injects in the subtropics (30°N/30°S),
+producing strong tropical stratospheric heating; **HiLLA** injects high-latitude,
+low-altitude, seasonally (60°N/S, 13–15 km), producing much less tropical heating.
+Comparing them isolates *how much* of the winter-wind effect comes from that
+tropical heating.
+
+**Q: Why does the jet stream / NAO matter for "extreme weather"?**
+The jet stream and the NAO are the "steering wheel" for European and North
+American winters. A more positive NAO and a poleward jet bring milder, wetter,
+stormier conditions to the north and drier conditions to the Mediterranean. So if
+SAI nudges these, it changes how extreme winters are — even if the global average
+temperature is unchanged.
+
+**Q: What are "ETCCDI indices"?**
+An internationally agreed set of ~27 standard recipes for measuring climate
+extremes from daily data (e.g. "frost days" = days below 0 °C). Using the standard
+recipes means the results can be compared with everyone else's. This project
+implements 24 of them, including the trickier percentile-based ones.
+
+**Q: What does the "CI / green check" on GitHub mean?**
+Every time code changes, GitHub automatically re-runs all the tests. A green check
+means every test passed on every supported Python version — evidence the code
+works and stays working.
+
+**Q: Can someone reproduce my results?**
+Yes — that's the whole point. They clone the repo, run one command, and get the
+same demo dataset and figures, with no large downloads. With Cloud Hub access they
+get the real dataset the same way.
+
+**Q: Which file should I show in an interview?**
+Lead with this guide (the big picture), then the demo notebook (the guided tour
+with charts), then `kernels.py` + its tests (to show the maths is correct), and
+finally the Deliverable 3 write-up (to show the science reasoning).
+
+---
+
+## 7. How to actually run it
 
 ```mermaid
 flowchart TD
@@ -384,7 +493,7 @@ no special access. Step 5's notebook walks through the whole story with charts.
 
 ---
 
-## 7. Automated testing (CI)
+## 8. Automated testing (CI)
 
 Every time code is pushed to GitHub, a robot (**GitHub Actions**) automatically
 re-runs all the tests on several Python versions, and even regenerates the demo
@@ -404,7 +513,7 @@ flowchart LR
 
 ---
 
-## 8. Where to look for what
+## 9. Where to look for what
 
 | If you want to… | Open this |
 |-----------------|-----------|
@@ -418,7 +527,7 @@ flowchart LR
 
 ---
 
-## 9. One-paragraph summary you can reuse
+## 10. One-paragraph summary you can reuse
 
 > This project is an open-science prototype for the Reflective SAI Uncertainty
 > Database (Track A). It delivers (1) `sai_extremes`, a tested Python workflow that
